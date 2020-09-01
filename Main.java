@@ -61,6 +61,10 @@ public class Main {
         System.out.println(blockToPrint.previousHash);
         System.out.println("Hash of the block: ");
         System.out.println(blockToPrint.hash);
+        System.out.println("Block data:" + ((blockToPrint.messages.isEmpty()) ? " no messages" : ""));
+        for (String message : blockToPrint.messages) {
+            System.out.println(message);
+        }
         System.out.println("Block was generating for " + blockToPrint.timeSpentMining + " milliseconds.");
         System.out.println(blockToPrint.numberOfZeroPrefixesRequiredChangeDescription);
         System.out.println();
