@@ -5,12 +5,14 @@ import java.util.ArrayList;
 public class Blockchain {
     private ArrayList<Block> blocks;
     private static Blockchain instance;
+    public ArrayList<String> messages;
 
     // Create the seed block and blockchain.
     private Blockchain () {
         blocks = new ArrayList<>();
-        Block block = new Block(0, 0, "0", 0);
+        Block block = new Block(0, 0, "0", 0, new ArrayList<>());
         blocks.add(block);
+        messages = new ArrayList<>();
     }
 
     public Block getBlock (int index) {

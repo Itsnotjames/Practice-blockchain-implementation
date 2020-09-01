@@ -1,5 +1,6 @@
 package blockchain;
 
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,7 +26,10 @@ public class Main {
 
             String previousBlockHash = blockchain.getBlock(previousBlockId).hash;
 
-            AddBlockToChain AddBlockToChainTask = new AddBlockToChain(blockchainSizeBeforeMining, previousBlockHash, hasThePoolCreatedABlockCountdownLatch);
+            ArrayList<String> messagesSentDuringPreviousBlockCreation = blockchain.messages;
+            blockchain.messages.clear();
+
+            AddBlockToChain AddBlockToChainTask = new AddBlockToChain(blockchainSizeBeforeMining, previousBlockHash, hasThePoolCreatedABlockCountdownLatch, messagesSentDuringPreviousBlockCreation);
 
             // Continue mining until a new block is added.
             for (int j = 0; j < NUMBER_OF_MINERS; j++){

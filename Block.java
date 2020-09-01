@@ -1,5 +1,6 @@
 package blockchain;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 
@@ -13,8 +14,9 @@ public class Block {
     int nextBlockNumberOfZeroPrefixesRequired; // Next block's mining difficulty.
     public String numberOfZeroPrefixesRequiredChangeDescription;
     public long timeSpentMining;
+    ArrayList<String> messages;
 
-    public Block (int id, long minerId, String previousHash, int numberOfZeroPrefixesRequired) {
+    public Block (int id, long minerId, String previousHash, int numberOfZeroPrefixesRequired, ArrayList<String> messagesSentDuringPreviousBlockCreation) {
         long startDate = new Date().getTime(); // Start block mining timer.
 
         do {
@@ -24,6 +26,7 @@ public class Block {
             this.timeStamp = new Date().getTime();
             this.magicNumber = new Random().nextLong();
             this.hash = calculateHash();
+            this.messages = messagesSentDuringPreviousBlockCreation;
         } while (!validProofOfWork(numberOfZeroPrefixesRequired));
 
         long endDate = new Date().getTime();
