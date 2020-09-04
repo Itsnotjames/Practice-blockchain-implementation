@@ -1,18 +1,19 @@
 package blockchain;
 
+import java.security.*;
 import java.util.ArrayList;
 
 public class Blockchain {
-    private ArrayList<Block> blocks;
+    private ArrayList<Block> blocks; // todo consider hashset to decouple id from index
     private static Blockchain instance;
-    public ArrayList<String> messages;
+    public ArrayList<Transfer> transferPool;
 
-    // Create the seed block and blockchain.
+    // Create the seed block, blockchain, and key generator.
     private Blockchain () {
         blocks = new ArrayList<>();
         Block block = new Block(0, 0, "0", 0, new ArrayList<>());
         blocks.add(block);
-        messages = new ArrayList<>();
+        transferPool = new ArrayList<>();
     }
 
     public Block getBlock (int index) {

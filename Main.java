@@ -26,10 +26,10 @@ public class Main {
 
             String previousBlockHash = blockchain.getBlock(previousBlockId).hash;
 
-            ArrayList<String> messagesSentDuringPreviousBlockCreation = blockchain.messages;
-            blockchain.messages.clear();
+            ArrayList<Transfer> transfersSentDuringPreviousBlockCreation = blockchain.transferPool;
+            blockchain.transferPool.clear();
 
-            AddBlockToChain AddBlockToChainTask = new AddBlockToChain(blockchainSizeBeforeMining, previousBlockHash, hasThePoolCreatedABlockCountdownLatch, messagesSentDuringPreviousBlockCreation);
+            AddBlockToChain AddBlockToChainTask = new AddBlockToChain(blockchainSizeBeforeMining, previousBlockHash, hasThePoolCreatedABlockCountdownLatch, transfersSentDuringPreviousBlockCreation);
 
             // Continue mining until a new block is added.
             for (int j = 0; j < NUMBER_OF_MINERS; j++){
@@ -61,9 +61,9 @@ public class Main {
         System.out.println(blockToPrint.previousHash);
         System.out.println("Hash of the block: ");
         System.out.println(blockToPrint.hash);
-        System.out.println("Block data:" + ((blockToPrint.messages.isEmpty()) ? " no messages" : ""));
-        for (String message : blockToPrint.messages) {
-            System.out.println(message);
+        System.out.println("Block data:" + ((blockToPrint.transfers.isEmpty()) ? " no transfers" : ""));
+        for (Transfer transfer : blockToPrint.transfers) {
+            System.out.println(transfer.getDescription());
         }
         System.out.println("Block was generating for " + blockToPrint.timeSpentMining + " milliseconds.");
         System.out.println(blockToPrint.numberOfZeroPrefixesRequiredChangeDescription);

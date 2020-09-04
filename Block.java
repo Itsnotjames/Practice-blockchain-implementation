@@ -14,9 +14,9 @@ public class Block {
     int nextBlockNumberOfZeroPrefixesRequired; // Next block's mining difficulty.
     public String numberOfZeroPrefixesRequiredChangeDescription;
     public long timeSpentMining;
-    ArrayList<String> messages;
+    ArrayList<Transfer> transfers;
 
-    public Block (int id, long minerId, String previousHash, int numberOfZeroPrefixesRequired, ArrayList<String> messagesSentDuringPreviousBlockCreation) {
+    public Block (int id, long minerId, String previousHash, int numberOfZeroPrefixesRequired, ArrayList<Transfer> transfersSentDuringPreviousBlockCreation) {
         long startDate = new Date().getTime(); // Start block mining timer.
 
         do {
@@ -26,7 +26,7 @@ public class Block {
             this.timeStamp = new Date().getTime();
             this.magicNumber = new Random().nextLong();
             this.hash = calculateHash();
-            this.messages = messagesSentDuringPreviousBlockCreation;
+            this.transfers = transfersSentDuringPreviousBlockCreation;
         } while (!validProofOfWork(numberOfZeroPrefixesRequired));
 
         long endDate = new Date().getTime();

@@ -7,20 +7,20 @@ public class AddBlockToChain implements Runnable {
     int id;
     String previousBlockHash;
     CountDownLatch minerPoolLatch;
-    ArrayList<String> messagesSentDuringPreviousBlockCreation;
+    ArrayList<Transfer> transfersSentDuringPreviousBlockCreation;
 
-    public AddBlockToChain (int id, String previousBlockHash, CountDownLatch minerPoolLatch, ArrayList<String> messagesSentDuringPreviousBlockCreation) {
+    public AddBlockToChain (int id, String previousBlockHash, CountDownLatch minerPoolLatch, ArrayList<Transfer> transfersSentDuringPreviousBlockCreation) {
         this.id = id;
         this.previousBlockHash = previousBlockHash;
         this.minerPoolLatch = minerPoolLatch;
-        this.messagesSentDuringPreviousBlockCreation = messagesSentDuringPreviousBlockCreation;
+        this.transfersSentDuringPreviousBlockCreation = transfersSentDuringPreviousBlockCreation;
     }
     
     @Override
     public void run(){
         Blockchain blockchain = Blockchain.getInstance();
         Block previousBlock = blockchain.getBlock(blockchain.getBlockchainSize() - 1);
-        Block newBlock = new Block(id, Thread.currentThread().getId(), previousBlockHash, previousBlock.nextBlockNumberOfZeroPrefixesRequired, messagesSentDuringPreviousBlockCreation);
+        Block newBlock = new Block(id, Thread.currentThread().getId(), previousBlockHash, previousBlock.nextBlockNumberOfZeroPrefixesRequired, transfersSentDuringPreviousBlockCreation);
         blockchain.addBlock(newBlock);
         minerPoolLatch.countDown();
     }
