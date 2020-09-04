@@ -38,4 +38,11 @@ public class Blockchain {
         }
         return instance;
     }
+
+    public void addTransfer(byte[] encryptedTransfer, PublicKey fromWallet) throws Exception {
+        byte[] serialisedTransfer = CryptoUtil.decryptWithPublicKeyRSA(encryptedTransfer, fromWallet);
+        Transfer transfer = (Transfer) CryptoUtil.deserialize(serialisedTransfer);
+        transfer.fromWallet = fromWallet;
+        transferPool.add(transfer);
+    }
 }
