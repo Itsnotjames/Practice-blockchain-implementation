@@ -61,7 +61,7 @@ public class Block {
 
     // Calculate the block's hash with SHA256 based on the block's content.
     public String calculateHash () {
-        return StringUtil.applySha256(
+        return CryptoUtil.applySha256(
                 this.previousHash +
                         this.timeStamp +
                         this.id +
