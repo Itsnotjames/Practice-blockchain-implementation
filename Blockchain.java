@@ -11,7 +11,7 @@ public class Blockchain {
     // Create the seed block, blockchain, and key generator.
     private Blockchain () {
         blocks = new ArrayList<>();
-        Block block = new Block(0, 0, "0", 0, new ArrayList<>());
+        Block block = new Block(0, 0, "0", 0, new ArrayList<>(), null);
         blocks.add(block);
         transferPool = new ArrayList<>();
     }

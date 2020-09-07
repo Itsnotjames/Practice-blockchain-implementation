@@ -1,5 +1,6 @@
 package blockchain;
 
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -15,8 +16,9 @@ public class Block {
     public String numberOfZeroPrefixesRequiredChangeDescription;
     public long timeSpentMining;
     ArrayList<Transfer> transfers;
+    PublicKey minedCurrencyRecipient;
 
-    public Block (int id, long minerId, String previousHash, int numberOfZeroPrefixesRequired, ArrayList<Transfer> transfersSentDuringPreviousBlockCreation) {
+    public Block (int id, long minerId, String previousHash, int requiredZeroPrefixes, ArrayList<Transfer> transfersSentDuringPreviousBlockCreation, PublicKey minedCurrencyRecipient) {
         long startDate = new Date().getTime(); // Start block mining timer.
 
         do {
@@ -27,12 +29,13 @@ public class Block {
             this.magicNumber = new Random().nextLong();
             this.hash = calculateHash();
             this.transfers = transfersSentDuringPreviousBlockCreation;
-        } while (!validProofOfWork(numberOfZeroPrefixesRequired));
+            this.minedCurrencyRecipient = minedCurrencyRecipient;
+        } while (!validProofOfWork(requiredZeroPrefixes));
 
         long endDate = new Date().getTime();
         this.timeSpentMining = endDate - startDate; // The time spent mining this block.
 
-        refineMinerDifficulty(timeSpentMining, numberOfZeroPrefixesRequired);
+        refineMinerDifficulty(timeSpentMining, requiredZeroPrefixes);
     }
 
     // Refine the next block's mining difficulty (nextBlockNumberOfZeroPrefixesRequired) based on the the time taken to mine the current block.
