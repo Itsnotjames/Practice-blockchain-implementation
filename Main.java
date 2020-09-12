@@ -45,29 +45,27 @@ public class Main {
     }
 
     private static void printBlockchain () {
-        for (int i = 0; i < blockchain.getBlockchainSize(); i++){
-            printBlock(blockchain.getBlock(i));
+        Block currentBlock = blockchain.getLastBlock();
+        while (currentBlock != null) {
+            printBlock(currentBlock);
+            currentBlock = blockchain.getBlock(currentBlock.previousHash);
         }
     }
 
     private static void printBlock(Block blockToPrint)
     {
-        System.out.println("Block:");
-        System.out.println("Created by miner #: " + blockToPrint.minerId);
-        System.out.println("Account: " + blockToPrint.minedCurrencyRecipient + " gets 100 VC"); // todo make gained currency a variable
-        System.out.println("Id: " + blockToPrint.id);
-        System.out.println("Timestamp: " + blockToPrint.timeStamp);
-        System.out.println("Magic number: " + blockToPrint.magicNumber);
-        System.out.println("Hash of the previous block:");
-        System.out.println(blockToPrint.previousHash);
+        System.out.println("Block details:");
         System.out.println("Hash of the block: ");
         System.out.println(blockToPrint.hash);
+        System.out.println("Hash of the previous block:");
+        System.out.println(blockToPrint.previousHash);
+        System.out.println("Timestamp: " + blockToPrint.timeStamp);
+        System.out.println("Magic number: " + blockToPrint.magicNumber);
         System.out.println("Block data:" + ((blockToPrint.transfers.isEmpty()) ? "\n no transfers" : ""));
         for (Transfer transfer : blockToPrint.transfers) {
             System.out.println(transfer.getDescription());
         }
         System.out.println("Block was generating for " + blockToPrint.timeSpentMining + " milliseconds.");
-        System.out.println(blockToPrint.numberOfZeroPrefixesRequiredChangeDescription);
         System.out.println();
     }
 }
