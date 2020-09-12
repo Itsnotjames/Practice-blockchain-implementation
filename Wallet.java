@@ -6,12 +6,11 @@ public class Wallet {
     private KeyPairGenerator keyPairGenerator;
     public PublicKey publicKey;
     private PrivateKey privateKey;
-
-
-    public Wallet () throws NoSuchAlgorithmException {
-        int keyLength = 10;
+    
+    public Wallet (SecureRandom rng) throws NoSuchAlgorithmException, NoSuchProviderException {
+        int keyLength = 2048;
         keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(keyLength);
+        keyPairGenerator.initialize(keyLength, rng);
 
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
         this.publicKey = keyPair.getPublic();
