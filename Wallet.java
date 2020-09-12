@@ -19,7 +19,7 @@ public class Wallet {
     }
 
     public void requestFundTransfer (double funds, PublicKey toWallet, Blockchain blockchain) throws Exception {
-        Transfer transfer = new Transfer(funds, toWallet);
+        Transfer transfer = new Transfer(funds, toWallet, blockchain.transferCount);
         byte[] serialisedTransfer = CryptoUtil.serialize(transfer);
         byte[] encryptedTransfer = CryptoUtil.encryptWithPrivateKeyRSA(serialisedTransfer, privateKey);
 

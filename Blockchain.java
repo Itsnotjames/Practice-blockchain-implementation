@@ -2,35 +2,41 @@ package blockchain;
 
 import java.security.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Blockchain {
-    private ArrayList<Block> blocks; // todo consider hashset to decouple id from index
+    public HashMap<String, Block> blocks;
     private static Blockchain instance;
     public ArrayList<Transfer> transferPool;
+    public String lastBlockHash;
+    int transferCount;
 
     // Create the seed block, blockchain, and key generator.
     private Blockchain () {
-        blocks = new ArrayList<>();
-        Block block = new Block(0, 0, "0", 0, new ArrayList<>(), null);
-        blocks.add(block);
+        blocks = new HashMap<>();
+        Block block = new Block( "0", 0, new ArrayList<>(), null);
+        blocks.put(block.hash, block);
         transferPool = new ArrayList<>();
+        lastBlockHash = block.hash;
+        transferCount = 0;
     }
 
-    public Block getBlock (int index) {
-        return blocks.get(index); // todo block.id is currently coupled to the index, consider decoupling
+    public Block getLastBlock () {
+        return blocks.get(lastBlockHash);
+    }
+
+    public Block getBlock (String blockHash) {
+        return blocks.get(blockHash);
     }
 
     public void addBlock (Block blockToAdd) {
         synchronized (this) {
-            int lastBlockId = blocks.get(blocks.size() - 1).id;
-            if (lastBlockId == blockToAdd.id - 1) {
-                blocks.add(blockToAdd);
+            if (blocks.containsKey(blockToAdd.previousHash) && !blocks.containsKey(blockToAdd.hash)) {
+                blocks.put(blockToAdd.hash, blockToAdd);
+                lastBlockHash = blockToAdd.hash;
+                transferCount++;
             }
         }
-    }
-
-    public int getBlockchainSize() {
-        return blocks.size();
     }
 
     public static Blockchain getInstance() {

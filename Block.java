@@ -8,49 +8,36 @@ import java.util.Random;
 public class Block {
     public String hash;
     public String previousHash;
-    public int id;
-    public long minerId;
     public long timeStamp;
     public long magicNumber;
-    int nextBlockNumberOfZeroPrefixesRequired; // Next block's mining difficulty.
-    public String numberOfZeroPrefixesRequiredChangeDescription;
-    public long timeSpentMining;
     ArrayList<Transfer> transfers;
     long timeSpentMining;
 
-    public Block (int id, long minerId, String previousHash, int requiredZeroPrefixes, ArrayList<Transfer> transfersSentDuringPreviousBlockCreation, PublicKey minedCurrencyRecipient) {
-        long startDate = new Date().getTime(); // Start block mining timer.
-
+    public Block (String previousHash, int minerDifficulty, ArrayList<Transfer> transfersSentDuringPreviousBlockCreation, PublicKey minedCurrencyRecipient) {
+        long miningStartTime = new Date().getTime();
+        this.previousHash = previousHash;
+        this.transfers = new ArrayList<>();
+        if (minedCurrencyRecipient != null) {
+            rewardTransaction(minedCurrencyRecipient, this.transfers);
+        }
+        
         do {
-            this.id = id;
-            this.minerId = minerId;
-            this.previousHash = previousHash;
             this.timeStamp = new Date().getTime();
             this.magicNumber = new Random().nextLong();
             this.timeSpentMining = new Date().getTime() - miningStartTime;
             this.hash = calculateHash();
-            this.transfers = transfersSentDuringPreviousBlockCreation;
-            this.minedCurrencyRecipient = minedCurrencyRecipient;
-        } while (!validProofOfWork(requiredZeroPrefixes));
-
-        long endDate = new Date().getTime();
-        this.timeSpentMining = endDate - startDate; // The time spent mining this block.
-
-        refineMinerDifficulty(timeSpentMining, requiredZeroPrefixes);
+        } while (!validProofOfWork(minerDifficulty));
     }
 
-    // Refine the next block's mining difficulty (nextBlockNumberOfZeroPrefixesRequired) based on the the time taken to mine the current block.
-    private void refineMinerDifficulty(long timeSpentMining, int numberOfZeroPrefixesRequired) {
-        if (timeSpentMining < 15) {
-            nextBlockNumberOfZeroPrefixesRequired = numberOfZeroPrefixesRequired + 1;
-            numberOfZeroPrefixesRequiredChangeDescription = "N was increased to " + nextBlockNumberOfZeroPrefixesRequired;
-        } else if (timeSpentMining > 60) {
-            nextBlockNumberOfZeroPrefixesRequired = numberOfZeroPrefixesRequired - 1;
-            numberOfZeroPrefixesRequiredChangeDescription = "N was decreased by 1";
-        } else {
-            nextBlockNumberOfZeroPrefixesRequired = numberOfZeroPrefixesRequired;
-            numberOfZeroPrefixesRequiredChangeDescription = "N stays the same";
+    // Reward 100 coins to the specified wallet.
+    private void rewardTransaction (PublicKey recipient, ArrayList<Transfer> transfers) {
+        int rewardTransferId = 0;
+        if (!transfers.isEmpty()) {
+            Transfer latestTransfer = this.transfers.get(this.transfers.size() - 1);
+            rewardTransferId = latestTransfer.transferId + 1;
         }
+
+        transfers.add(new Transfer(100, recipient, rewardTransferId));
     }
 
     // Does the hash show the block's proof of work?
