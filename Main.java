@@ -1,5 +1,8 @@
 package blockchain;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -8,31 +11,43 @@ import java.util.concurrent.Executors;
 public class Main {
     static Blockchain blockchain;
     static final int NUMBER_OF_MINERS = 10;
+    static final int MINER_DIFFICULTY = 3;
 
     public static void main(String[] args) {
         blockchain = Blockchain.getInstance();
-        addNewBlocksToBlockchain(14);
+        addNewBlocksToBlockchain(5);
         printBlockchain();
     }
 
     // Create a pool of miners to create and add blocks to the blockchain.
     // todo consider refactoring
     private static void addNewBlocksToBlockchain (int blocksToAdd) {
+        ArrayList<Wallet> wallets = new ArrayList<>();
+        try {
+            SecureRandom rng = SecureRandom.getInstance("SHA1PRNG", "SUN");
+            rng.setSeed(12345);
+            wallets.add(new Wallet(rng));
+            wallets.add(new Wallet(rng));
+            wallets.add(new Wallet(rng));
+            wallets.add(new Wallet(rng));
+            wallets.add(new Wallet(rng));
+        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
+            e.printStackTrace();
+        }
+
         for(int i = 0; i < blocksToAdd; i++){
-            int blockchainSizeBeforeMining = blockchain.getBlockchainSize();
             ExecutorService minerPool = Executors.newFixedThreadPool(NUMBER_OF_MINERS);
             CountDownLatch hasThePoolCreatedABlockCountdownLatch = new CountDownLatch(1);
-            int previousBlockId = blockchainSizeBeforeMining - 1;
 
-            String previousBlockHash = blockchain.getBlock(previousBlockId).hash;
+            String previousBlockHash = blockchain.getLastBlock().hash;
 
-            ArrayList<Transfer> transfersSentDuringPreviousBlockCreation = blockchain.transferPool;
+            ArrayList<Transfer> transfersSentDuringPreviousBlockCreation = blockchain.getLastBlock().transfers;
             blockchain.transferPool.clear();
-
-            AddBlockToChain AddBlockToChainTask = new AddBlockToChain(blockchainSizeBeforeMining, previousBlockHash, hasThePoolCreatedABlockCountdownLatch, transfersSentDuringPreviousBlockCreation);
 
             // Continue mining until a new block is added.
             for (int j = 0; j < NUMBER_OF_MINERS; j++){
+                int walletRNG = (int)(Math.random() * ((4 - 0) + 1)) + 0;
+                AddBlockToChain AddBlockToChainTask = new AddBlockToChain(previousBlockHash, MINER_DIFFICULTY, hasThePoolCreatedABlockCountdownLatch, transfersSentDuringPreviousBlockCreation, wallets.get(walletRNG).publicKey);
                 minerPool.submit(() -> AddBlockToChainTask.run());
             }
             try {
