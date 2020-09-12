@@ -16,7 +16,7 @@ public class Block {
     public String numberOfZeroPrefixesRequiredChangeDescription;
     public long timeSpentMining;
     ArrayList<Transfer> transfers;
-    PublicKey minedCurrencyRecipient;
+    long timeSpentMining;
 
     public Block (int id, long minerId, String previousHash, int requiredZeroPrefixes, ArrayList<Transfer> transfersSentDuringPreviousBlockCreation, PublicKey minedCurrencyRecipient) {
         long startDate = new Date().getTime(); // Start block mining timer.
@@ -27,6 +27,7 @@ public class Block {
             this.previousHash = previousHash;
             this.timeStamp = new Date().getTime();
             this.magicNumber = new Random().nextLong();
+            this.timeSpentMining = new Date().getTime() - miningStartTime;
             this.hash = calculateHash();
             this.transfers = transfersSentDuringPreviousBlockCreation;
             this.minedCurrencyRecipient = minedCurrencyRecipient;
@@ -64,11 +65,14 @@ public class Block {
 
     // Calculate the block's hash with SHA256 based on the block's content.
     public String calculateHash () {
-        return CryptoUtil.applySha256(
-                this.previousHash +
-                        this.timeStamp +
-                        this.id +
-                        this.magicNumber
-        );
+        StringBuilder hashInput = new StringBuilder(previousHash)
+                                            .append(timeStamp)
+                                            .append(magicNumber)
+                                            .append(timeSpentMining);
+        for (Transfer transfer : this.transfers) {
+            String transferDesc = transfer.getDescription();
+            hashInput.append(transferDesc);
+        }
+        return CryptoUtil.applySha256(hashInput.toString());
     }
 }
