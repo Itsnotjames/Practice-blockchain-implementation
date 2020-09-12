@@ -50,6 +50,11 @@ public class Blockchain {
         byte[] serialisedTransfer = CryptoUtil.decryptWithPublicKeyRSA(encryptedTransfer, fromWallet);
         Transfer transfer = (Transfer) CryptoUtil.deserialize(serialisedTransfer);
         transfer.fromWallet = fromWallet;
-        transferPool.add(transfer);
+
+        // Double spending check
+        Transfer latestTransfer = transferPool.get(transferPool.size() - 1);
+        if (transfer.transferId == latestTransfer.transferId + 1) {
+            transferPool.add(transfer);
+        }
     }
 }
